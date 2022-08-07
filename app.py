@@ -1,6 +1,9 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
+
 from base import Arena
-from unit import BaseUnit
+from classes import unit_classes
+from equipment import Equipment, Weapon, Armor
+from unit import BaseUnit, PlayerUnit, EnemyUnit
 
 app = Flask(__name__)
 
@@ -9,7 +12,8 @@ heroes = {
     "enemy": BaseUnit
 }
 
-arena = Arena()  # TODO инициализируем класс арены
+arena = Arena()
+equipment = Equipment()
 
 
 @app.route("/")
@@ -19,33 +23,32 @@ def menu_page():
 
 @app.route("/fight/")
 def start_fight():
-    # TODO выполняем функцию start_game экземпляра класса арена и передаем ему необходимые аргументы
+    arena.start_game(player=heroes['player'], enemy=heroes['enemy'])
+    return render_template('fight.html', heroes=heroes)
 
-    # TODO рендерим экран боя (шаблон fight.html)
-    pass
 
 @app.route("/fight/hit")
 def hit():
-    # TODO кнопка нанесения удара
-    # TODO обновляем экран боя (нанесение удара) (шаблон fight.html)
-    # TODO если игра идет - вызываем метод player.hit() экземпляра класса арены
-    # TODO если игра не идет - пропускаем срабатывание метода (простот рендерим шаблон с текущими данными)
-    pass
+    if arena.game_is_running:
+        result = arena.player_hit()
+        return render_template('fight.html', heroes=heroes, result=result)
+    return render_template('fight.html', heroes=heroes, battle_result=arena.battle_result)
 
 
 @app.route("/fight/use-skill")
 def use_skill():
-    # TODO кнопка использования скилла
-    # TODO логика пркатикчески идентична предыдущему эндпоинту
-    pass
+    if arena.game_is_running:
+        result = arena.player_use_skill()
+        return render_template('fight.html', heroes=heroes, result=result)
+    return render_template('fight.html', heroes=heroes, battle_result=arena.battle_result)
 
 
 @app.route("/fight/pass-turn")
 def pass_turn():
-    # TODO кнопка пропус хода
-    # TODO логика пркатикчески идентична предыдущему эндпоинту
-    # TODO однако вызываем здесь функцию следующий ход (arena.next_turn())
-    pass
+    if arena.game_is_running:
+        result = arena.next_turn()
+        return render_template('fight.html', heroes=heroes, result=result)
+    return render_template('fight.html', heroes=heroes, battle_result=arena.battle_result)
 
 
 @app.route("/fight/end-fight")
@@ -56,20 +59,53 @@ def end_fight():
 
 @app.route("/choose-hero/", methods=['post', 'get'])
 def choose_hero():
-    # TODO кнопка выбор героя. 2 метода GET и POST
+    if request.method == "GET":
+        page_data = {"header": "Выбор игрока",
+                     "classes": unit_classes,
+                     "weapons": equipment.get_weapons_names(),
+                     "armors": equipment.get_armors_names()}
 
-    # TODO на GET отрисовываем форму.
-    # TODO на POST отправляем форму и делаем редирект на эндпоинт choose enemy
-    pass
+        return render_template('hero_choosing.html', result=page_data)
+
+    if request.method == "POST":
+        user_name = request.form.get('name')
+        unit_class = unit_classes[request.form.get('unit_class')]
+        weapon: Weapon = equipment.get_weapon(request.form.get('weapon'))
+        armor: Armor = equipment.get_armor(request.form.get('armor'))
+
+        player = PlayerUnit(name=user_name, unit_class=unit_class)
+        player.equip_weapon(weapon)
+        player.equip_armor(armor)
+
+        heroes['player'] = player
+
+        return redirect(url_for('choose_enemy'))
 
 
 @app.route("/choose-enemy/", methods=['post', 'get'])
 def choose_enemy():
-    # TODO кнопка выбор соперников. 2 метода GET и POST
-    # TODO также на GET отрисовываем форму.
-    # TODO а на POST отправляем форму и делаем редирект на начало битвы
-    pass
+    if request.method == "GET":
+        page_data = {"header": "Выбор противника",
+                     "classes": unit_classes,
+                     "weapons": equipment.get_weapons_names(),
+                     "armors": equipment.get_armors_names()}
+
+        return render_template('hero_choosing.html', result=page_data)
+
+    if request.method == "POST":
+        user_name = request.form.get('name')
+        unit_class = unit_classes[request.form.get('unit_class')]
+        weapon: Weapon = equipment.get_weapon(request.form.get('weapon'))
+        armor: Armor = equipment.get_armor(request.form.get('armor'))
+
+        enemy = EnemyUnit(name=user_name, unit_class=unit_class)
+        enemy.equip_weapon(weapon)
+        enemy.equip_armor(armor)
+
+        heroes['enemy'] = enemy
+
+        return redirect(url_for('start_fight', _external=True))
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

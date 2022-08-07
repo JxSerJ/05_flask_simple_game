@@ -46,7 +46,7 @@ class BaseUnit(ABC):
         else:
             result_damage = 0
 
-        return result_damage
+        return round(result_damage, 1)
 
     def get_damage(self, damage: float) -> Optional[float]:
         self.hp -= damage
@@ -59,6 +59,7 @@ class BaseUnit(ABC):
     def use_skill(self, target: BaseUnit) -> str:
         if self._is_skill_used:
             return 'Навык уже использован.'
+        self._is_skill_used = True
         return self.unit_class.skill.use(user=self, target=target)
 
 
@@ -89,8 +90,8 @@ class EnemyUnit(BaseUnit):
     def hit(self, target: BaseUnit) -> str:
         if not self._is_skill_used:
             skill_usage_chance = randint(0, 100)
-            if skill_usage_chance > 70:
-                return self.use_skill(target)
+            if skill_usage_chance > 80:
+                return self.use_skill(target=target)
 
         if self.stamina_points >= self.weapon.stamina_per_hit:
             damage = self._count_damage(target)

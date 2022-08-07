@@ -65,6 +65,6 @@ class Equipment:
             equipment_data = json.load(file)
         try:
             return EquipmentData(weapons=weapon_schema(many=True).load(equipment_data['weapons']),
-                                 armor=armor_schema(many=True).load(equipment_data['armor']))
+                                 armor=armor_schema(many=True).load(equipment_data['armors']))
         except marshmallow.exceptions.ValidationError:
             raise ValueError

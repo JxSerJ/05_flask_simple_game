@@ -12,7 +12,7 @@ class Skill(ABC):
     Базовый класс умения
     """
     name: str = None
-    stamina: float = 0
+    _stamina: float = 0
     damage: float = 0
     user = None
     target = None
@@ -25,12 +25,13 @@ class Skill(ABC):
     @property
     @abstractmethod
     def stamina(self):
-        pass
+        return round(self._stamina, 1)
 
     @property
     @abstractmethod
     def damage(self):
-        pass
+        return round(self.damage, 1)
+
 
     @abstractmethod
     def skill_effect(self) -> str:
@@ -46,7 +47,7 @@ class Skill(ABC):
         """
         self.user = user
         self.target = target
-        if self._is_stamina_enough:
+        if self._is_stamina_enough():
             return self.skill_effect()
         return f"{self.user.name} попытался использовать {self.name} но у него не хватило выносливости."
 
