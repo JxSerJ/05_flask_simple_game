@@ -9,14 +9,7 @@ from equipment import Weapon, Armor
 
 
 class BaseUnit(ABC):
-    """
-    Базовый класс юнита
-    """
-
     def __init__(self, name: str, unit_class: UnitClass):
-        """
-        При инициализации класса Unit используем свойства класса UnitClass
-        """
         self.name = name
         self.unit_class = unit_class
         self.hp = unit_class.max_health
@@ -61,9 +54,6 @@ class BaseUnit(ABC):
 
     @abstractmethod
     def hit(self, target: BaseUnit) -> str:
-        """
-        этот метод будет переопределен ниже
-        """
         pass
 
     def use_skill(self, target: BaseUnit) -> str:
