@@ -1,28 +1,39 @@
 import json
 from dataclasses import dataclass
+from typing import List
 
 import marshmallow
 import marshmallow_dataclass
 
+from random import uniform
+
 
 @dataclass
 class Armor:
+    id: int
+    name: str
+    defence: float
+    stamina_per_turn: float
     pass
 
 
 @dataclass
 class Weapon:
-    pass
+    id: int
+    name: str
+    min_damage: float
+    max_damage: float
+    stamina_per_hit: float
 
     @property
     def damage(self):
-        pass
+        return uniform(self.min_damage, self.max_damage)
 
 
 @dataclass
 class EquipmentData:
-    # TODO содержит 2 списка - с оружием и с броней
-    pass
+    weapons: List[Weapon]
+    armor: List[Armor]
 
 
 class Equipment:
@@ -30,29 +41,30 @@ class Equipment:
     def __init__(self):
         self.equipment = self._get_equipment_data()
 
-    def get_weapon(self, weapon_name) -> Weapon:
-        # TODO возвращает объект оружия по имени
-        pass
+    def get_weapon(self, weapon_name: str) -> Weapon:
+        for weapon in self.equipment.weapons:
+            if weapon.name == weapon_name:
+                return weapon
 
     def get_armor(self, armor_name) -> Armor:
-        # TODO возвращает объект брони по имени
-        pass
+        for armor in self.equipment.armor:
+            if armor.name == armor_name:
+                return armor
 
     def get_weapons_names(self) -> list:
-        # TODO возвращаем список с оружием
-        pass
+        return [weapon.name for weapon in self.equipment.weapons]
 
     def get_armors_names(self) -> list:
-        # TODO возвращаем список с броней
-        pass
+        return [armor.name for armor in self.equipment.armor]
 
     @staticmethod
     def _get_equipment_data() -> EquipmentData:
-        # TODO этот метод загружает json в переменную EquipmentData
-        equipment_file = open("./data/equipment.json")
-        data = json.load(...)
-        equipment_schema = marshmallow_dataclass.class_schema(...)
+        weapon_schema = marshmallow_dataclass.class_schema(Weapon)
+        armor_schema = marshmallow_dataclass.class_schema(Armor)
+        with open('./data/equipment.json', mode='r', encoding='utf-8') as file:
+            equipment_data = json.load(file)
         try:
-            return equipment_schema().load(data)
+            return EquipmentData(weapons=weapon_schema(many=True).load(equipment_data['weapons']),
+                                 armor=armor_schema(many=True).load(equipment_data['armor']))
         except marshmallow.exceptions.ValidationError:
             raise ValueError
