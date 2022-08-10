@@ -49,7 +49,7 @@ class Arena(metaclass=BaseSingleton):
         if self.enemy.stamina_points > self.enemy.unit_class.max_stamina:
             self.enemy.stamina = self.enemy.unit_class.max_stamina
 
-    def next_turn(self):
+    def next_turn(self) -> str:
         self._check_players_hp()
         if self.battle_result:
             return self.battle_result
@@ -58,18 +58,18 @@ class Arena(metaclass=BaseSingleton):
         result = self.enemy.hit(self.player)
         return result
 
-    def _end_game(self):
-        self._instances = {}
+    def _end_game(self) -> str:
+        self._instances: Dict[None, None] = {}
         self.game_is_running = False
         return self.battle_result
 
-    def player_hit(self):
+    def player_hit(self) -> str:
 
         result = self.player.hit(target=self.enemy)
         result = result + ", " + self.next_turn()
         return result
 
-    def player_use_skill(self):
+    def player_use_skill(self) -> str:
         result = self.player.use_skill(target=self.enemy)
         result = result + ", " + self.next_turn()
         return result
