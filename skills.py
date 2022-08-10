@@ -12,8 +12,10 @@ class Skill(ABC):
     Базовый класс умения
     """
     _stamina: float
-    user = None
-    target = None
+    _damage: float
+
+    user: BaseUnit
+    target: BaseUnit
 
     @property
     @abstractmethod
@@ -21,21 +23,18 @@ class Skill(ABC):
         pass
 
     @property
-    @abstractmethod
-    def stamina(self):
+    def stamina(self) -> float:
         return round(self._stamina, 1)
 
     @property
-    @abstractmethod
-    def damage(self):
-        return round(self.damage, 1)
-
+    def damage(self) -> float:
+        return round(self._damage, 1)
 
     @abstractmethod
     def skill_effect(self) -> str:
         pass
 
-    def _is_stamina_enough(self):
+    def _is_stamina_enough(self) -> bool:
         return self.user.stamina > self.stamina
 
     def use(self, user: BaseUnit, target: BaseUnit) -> str:
@@ -52,10 +51,10 @@ class Skill(ABC):
 
 class FuryPunch(Skill):
     name = 'Свирепый пинок'
-    stamina = 6
-    damage = 15
+    stamina: int = 6
+    damage: int = 15
 
-    def skill_effect(self):
+    def skill_effect(self) -> str:
         self.user.stamina -= self.stamina
         self.target.hp -= self.damage
         return f'{self.user.name} использует {self.name} и наносит {self.damage} урона сопернику.'
@@ -66,7 +65,7 @@ class HardShot(Skill):
     stamina = 5
     damage = 15
 
-    def skill_effect(self):
+    def skill_effect(self) -> str:
         self.user.stamina -= self.stamina
         self.target.hp -= self.damage
         return f'{self.user.name} использует {self.name} и наносит {self.damage} урона сопернику.'

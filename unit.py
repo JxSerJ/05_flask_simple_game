@@ -19,19 +19,19 @@ class BaseUnit(ABC):
         self._is_skill_used = False
 
     @property
-    def health_points(self):
+    def health_points(self) -> float:
         return round(self.hp, 1)
 
     @property
-    def stamina_points(self):
+    def stamina_points(self) -> float:
         return round(self.stamina, 1)
 
-    def equip_weapon(self, weapon):
-        self.weapon: Weapon = weapon
+    def equip_weapon(self, weapon: Weapon) -> str:
+        self.weapon = weapon
         return f"{self.name} экипирован оружием {self.weapon.name}"
 
-    def equip_armor(self, armor):
-        self.armor: Armor = armor
+    def equip_armor(self, armor: Armor) -> str:
+        self.armor = armor
         return f"{self.name} экипирован броней {self.armor.name}"
 
     def _count_damage(self, target) -> float:
@@ -48,7 +48,7 @@ class BaseUnit(ABC):
 
         return round(result_damage, 1)
 
-    def get_damage(self, damage: float) -> Optional[float]:
+    def get_damage(self, damage: float) -> float:
         self.hp -= damage
         return self.health_points
 

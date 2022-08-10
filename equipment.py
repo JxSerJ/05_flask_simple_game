@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import List, Generic
+from typing import List, Generic, Optional
 
 import marshmallow
 import marshmallow_dataclass
@@ -14,7 +14,6 @@ class Armor:
     name: str
     defence: float
     stamina_per_turn: float
-    pass
 
 
 @dataclass
@@ -41,15 +40,17 @@ class Equipment:
     def __init__(self):
         self.equipment = self._get_equipment_data()
 
-    def get_weapon(self, weapon_name: str):
+    def get_weapon(self, weapon_name: str) -> Optional[Weapon]:
         for weapon in self.equipment.weapons:
             if weapon.name == weapon_name:
                 return weapon
+        return None
 
-    def get_armor(self, armor_name: str):
+    def get_armor(self, armor_name: str) -> Optional[Armor]:
         for armor in self.equipment.armor:
             if armor.name == armor_name:
                 return armor
+        return None
 
     def get_weapons_names(self) -> list:
         return [weapon.name for weapon in self.equipment.weapons]
