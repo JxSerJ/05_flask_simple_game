@@ -11,9 +11,7 @@ class Skill(ABC):
     """
     Базовый класс умения
     """
-    name: str = None
-    _stamina: float = 0
-    damage: float = 0
+    _stamina: float
     user = None
     target = None
 

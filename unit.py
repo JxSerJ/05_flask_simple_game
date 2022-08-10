@@ -10,12 +10,12 @@ from equipment import Weapon, Armor
 
 class BaseUnit(ABC):
     def __init__(self, name: str, unit_class: UnitClass):
-        self.name = name
-        self.unit_class = unit_class
+        self.name: str = name
+        self.unit_class: UnitClass = unit_class
         self.hp = unit_class.max_health
         self.stamina = unit_class.max_stamina
-        self.weapon = None
-        self.armor = None
+        self.weapon: Weapon
+        self.armor: Armor
         self._is_skill_used = False
 
     @property
@@ -26,15 +26,15 @@ class BaseUnit(ABC):
     def stamina_points(self):
         return round(self.stamina, 1)
 
-    def equip_weapon(self, weapon: Weapon):
-        self.weapon = weapon
+    def equip_weapon(self, weapon):
+        self.weapon: Weapon = weapon
         return f"{self.name} экипирован оружием {self.weapon.name}"
 
-    def equip_armor(self, armor: Armor):
-        self.armor = armor
+    def equip_armor(self, armor):
+        self.armor: Armor = armor
         return f"{self.name} экипирован броней {self.armor.name}"
 
-    def _count_damage(self, target: BaseUnit) -> float:
+    def _count_damage(self, target) -> float:
         damage = self.weapon.damage * self.unit_class.attack
         if target.stamina_points >= target.armor.stamina_per_turn:
             defence = target.armor.defence
@@ -65,7 +65,7 @@ class BaseUnit(ABC):
 
 class PlayerUnit(BaseUnit):
 
-    def hit(self, target: BaseUnit) -> str:
+    def hit(self, target) -> str:
 
         if self.stamina_points >= self.weapon.stamina_per_hit:
             damage = self._count_damage(target)

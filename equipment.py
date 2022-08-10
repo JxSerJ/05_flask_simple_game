@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import List
+from typing import List, Generic
 
 import marshmallow
 import marshmallow_dataclass
@@ -41,12 +41,12 @@ class Equipment:
     def __init__(self):
         self.equipment = self._get_equipment_data()
 
-    def get_weapon(self, weapon_name: str) -> Weapon:
+    def get_weapon(self, weapon_name: str):
         for weapon in self.equipment.weapons:
             if weapon.name == weapon_name:
                 return weapon
 
-    def get_armor(self, armor_name) -> Armor:
+    def get_armor(self, armor_name: str):
         for armor in self.equipment.armor:
             if armor.name == armor_name:
                 return armor

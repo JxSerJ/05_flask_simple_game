@@ -1,8 +1,12 @@
-from unit import BaseUnit
+from __future__ import annotations
+
+from typing import Dict, Type, TypeVar, Protocol
+
+from unit import BaseUnit, PlayerUnit, EnemyUnit
 
 
 class BaseSingleton(type):
-    _instances = {}
+    _instances: Dict[BaseSingleton, object] = {}
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
@@ -13,10 +17,10 @@ class BaseSingleton(type):
 
 class Arena(metaclass=BaseSingleton):
     STAMINA_PER_ROUND = 1
-    player: BaseUnit = None
-    enemy: BaseUnit = None
+    player: BaseUnit
+    enemy: BaseUnit
     game_is_running: bool = False
-    battle_result: str = None
+    battle_result: str = ''
 
     def start_game(self, player: BaseUnit, enemy: BaseUnit):
         self.player: BaseUnit = player
